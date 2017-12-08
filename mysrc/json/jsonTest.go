@@ -6,17 +6,12 @@ import (
 )
 
 func main() {
-	d := myJson.JSONModel{Data: []byte(`{"code":0,"message":"",
-		"result":"/success.html?ticket=ST-35072-5jQz4UWTANeDRNzoORO5-sso01-example-org",
-		"haha": [{"name": "j", "age": 30}, {"name": "s", "age": 20}],
-		"hehe": {"sex": "frame", "tall": 180},
-		"xixi": [{"point": [{"x": 1, "y": "2"}, {"x": 2, "y": "3"}], "direct": "east"}]
-	}`)}
-
-	// Now can't support
-	// d = myJson.JSONModel{Data: []byte(`
-	// 	[{"x": "1", "y": "1"}, {"x": "2", "y": "2"}, {"x": "3", "y": "3"}]
-	// 	`)}
+	// d := myJson.JSONModel{Data: []byte(`{"code":0,"message":"",
+	// 	"result":"/success.html?ticket=ST-35072-5jQz4UWTANeDRNzoORO5-sso01-example-org",
+	// 	"haha": [{"name": "j", "age": 30}, {"name": "s", "age": 20}],
+	// 	"hehe": {"sex": "frame", "tall": 180},
+	// 	"xixi": [{"point": [{"x": 1, "y": "2"}, {"x": 2, "y": "3"}], "direct": "east"}]
+	// }`)}
 
 	// v, e := d.Get("result")
 	// if e != nil {
@@ -35,10 +30,21 @@ func main() {
 	// fmt.Printf("%v\r\n", v2)
 
 	//v, e := d.Get("haha.(1).name")
-	v, e := d.Get("xixi.(0).point.(1).y")
+	//v, e := d.Get("xixi.(0).point.(1).y")
 	//v, e := d.Get("xixi.(0).direct")
 	//v, e := d.Get("result")
 	//v, e := d.Get("(1).x") Failed
+
+	//Now can't support
+	d2 := myJson.JSONModel{Data: []byte(`
+		[{"x": "1", "y": "1"}, {"x": "2", "y": [{"Z1":"21", "Z2": "221"}, {"Z1":"22", "Z2": "222"}, {"Z1":"23", "Z2": "223"}]}, {"x": "3", "y": "3"}]
+		`)}
+	//v, e := d2.Get("(1).x")
+	//v, e := d2.Get("x") //first one
+	//v, e := d2.Get("(-1).x") //last one
+	//v, e := d2.Get("(1).y.(1).Z2")
+	//v, e := d2.Get("(1).y.(1)")
+	v, e := d2.Get("(1).y")
 	if e != nil {
 		fmt.Printf("%v", e)
 		return
