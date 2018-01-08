@@ -4,10 +4,9 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	. "github.com/Jagre/go/lib/gmodel"
 	_ "github.com/denisenkom/go-mssqldb"
 	"io/ioutil"
-	"jagre/gmodel"
-	. "jagre/gmodel"
 	"os"
 	"strings"
 )
@@ -67,7 +66,7 @@ func (config *DBConfiguration) GetModels() []*GModel {
 		if e != nil {
 			fmt.Println(e)
 		}
-		gmodels = append(gmodels, &GModel{ModelName: name, Properties: []*gmodel.GModelProperty{}})
+		gmodels = append(gmodels, &GModel{ModelName: name, Properties: []*GModelProperty{}})
 	}
 
 	//Get columns' info
@@ -85,7 +84,7 @@ func (config *DBConfiguration) GetModels() []*GModel {
 				fmt.Println(e)
 			}
 			goType = GetGModelType(originalType)
-			newModel := gmodel.GModelProperty{
+			newModel := GModelProperty{
 				Name:         name,
 				OriginalType: originalType,
 				GoType:       goType,
@@ -107,12 +106,18 @@ func (config *DBConfiguration) Output() error {
 	if len(config.FilePath) == 0 {
 		config.FilePath, _ = os.Getwd()
 	}
+	//Set path end with "/"
 	config.FilePath = strings.Replace(config.FilePath, "\\", "/", -1)
 	if !strings.HasSuffix(config.FilePath, "/") {
 		config.FilePath += "/"
 	}
-
-	modelString := fmt.Sprintf("package mssql\n***\n")
+	//Set PackageName
+	dirNodes := strings.Split(config.FilePath, "/")
+	namespace := "Models"
+	if len(dirNodes) > 0 {
+		namespace = dirNodes[len(dirNodes)-2]
+	}
+	modelString := fmt.Sprintf("package %s \n***\n", namespace)
 
 	models := config.GetModels()
 	for _, m := range models {
