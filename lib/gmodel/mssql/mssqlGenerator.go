@@ -18,10 +18,6 @@ type DBConfiguration struct {
 	FileName         string
 }
 
-func init() {
-	fmt.Println("Starting...")
-}
-
 //GetGModelType implement the interface IGModel
 func GetGModelType(sqlType string) string {
 	var goType string
@@ -97,8 +93,7 @@ func (config *DBConfiguration) GetModels() []*GModel {
 	return gmodels
 }
 
-//Output will output to file
-//TODO: 1. Package; 2. Convert sql's type & golang's type each other
+//Output will output the entities to file
 func (config *DBConfiguration) Output() error {
 	if len(config.FileName) == 0 {
 		return errors.New("Pls specified the file name")

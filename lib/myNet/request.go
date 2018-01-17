@@ -4,6 +4,7 @@ package myNet
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"io"
@@ -86,6 +87,33 @@ func (req *MyRequest) setCookies() {
 	}
 }
 
+//SetTLS set Transport Layer Security Protocol configuration for https access
+//TLS is Transport Layer Security Protocol that base on SSL3.0(Secure Socket Layer Protocol)
+//How to declare http.Transport:
+// transport = &http.Transport{
+//     TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+// }
+// req.client.Transport = transport
+func (req *MyRequest) SetTLS(transport *http.Transport) *MyRequest {
+	if transport != nil {
+		req.client.Transport = transport
+	}
+	return req
+}
+
+//setTLS set Transport Layer Security Protocol configuration for https access
+//[NOTICE] just for https access
+//TLS is Transport Layer Security Protocol that base on SSL3.0(Secure Socket Layer Protocol)
+func (req *MyRequest) setTLS() *MyRequest {
+	if strings.HasPrefix(req.URL, "https") {
+		transport := http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		}
+		req.client.Transport = &transport
+	}
+	return req
+}
+
 //SetQueries method
 func (req *MyRequest) SetQueries(queries map[string]string) *MyRequest {
 	if queries == nil {
@@ -128,6 +156,7 @@ func (req *MyRequest) Send() (*MyResponse, error) {
 
 	req.setHeaders()
 	req.setCookies()
+	req.setTLS()
 	if len(req.rawQuery) > 0 {
 		req.request.URL.RawQuery = req.rawQuery
 	}
