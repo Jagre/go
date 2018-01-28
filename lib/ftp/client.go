@@ -9,7 +9,7 @@ import (
 )
 
 func Client() {
-	addr := "192.18.56.45:8080"
+	addr := "192.168.1.105:8080"
 	//connect to server
 	conn, e := net.Dial("tcp", addr)
 	if e != nil {
@@ -18,43 +18,73 @@ func Client() {
 	}
 	defer conn.Close()
 
-	buf := make([]byte, 10240)
+	buf := make([]byte, 256)
 	n, e := conn.Read(buf)
 	if e != nil && e != io.EOF {
 		fmt.Println(e)
 	}
 	fmt.Println(string(buf[:n]))
-	var cmd string
-	reader := bufio.NewReader(os.Stdin)
+	rd := bufio.NewReader(os.Stdin)
 	for {
-		cmdline, e := reader.ReadString('\n')
+		cmdline, cmd, params, e := parseCmd(rd)
 		if e != nil {
 			fmt.Println(e)
-		}
-		fmt.Sscan(cmdline, &cmd)
-		if len(cmdline) == 1 {
 			continue
 		}
-		go sending(&conn, cmdline)
+		// fmt.Sscan(cmdline, &cmd)
+		// if len(cmdline) == 1 {
+		// 	continue
+		// }
+		go clientHandler(conn, cmdline, cmd, params)
 	}
 }
 
-func sending(conn *net.Conn, cmdline string) {
+func clientHandler(c net.Conn, cmdline, cmd string, params []string) {
+	sendCmd(c, cmdline)
+	switch cmd {
+	case "push":
+		if len(params) < 1 {
+			fmt.Println("Haven't specified the file name that you wanna upload")
+			return
+		}
+
+		e := ClientSend(c, params[0])
+		if e != nil {
+			fmt.Println(e)
+		}
+	case "pull":
+		if len(params) < 2 {
+			fmt.Println("Haven't specified the file name that you wanna save")
+			return
+		}
+		e := ClientReceive(c, params[1])
+		if e != nil {
+			fmt.Println(e)
+		}
+	default:
+		receiveMsg(c)
+	}
+
+}
+
+func sendCmd(c net.Conn, cmdline string) {
 	//send cmd to server
-	_, e := (*conn).Write([]byte(cmdline))
+	_, e := c.Write([]byte(cmdline))
 	if e != nil {
 		fmt.Println(e)
 	}
+}
 
-	buf := make([]byte, 256)
-	//read content of server returned
-	_, e = (*conn).Read(buf)
+func receiveMsg(c net.Conn) {
+	msg := make([]byte, 256)
+	//read message of server returned
+	_, e := c.Read(msg)
 	if e != nil {
 		if e != io.EOF {
 			fmt.Println(e)
 		}
 	}
-	if len(buf) > 0 {
-		fmt.Println(string(buf))
+	if len(msg) > 0 {
+		fmt.Println(string(msg))
 	}
 }
