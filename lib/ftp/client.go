@@ -9,7 +9,8 @@ import (
 )
 
 func Client() {
-	addr := "192.168.1.105:8080"
+	//addr := "192.168.1.105:8080"
+	addr := "172.18.23.45:8080"
 	//connect to server
 	conn, e := net.Dial("tcp", addr)
 	if e != nil {
@@ -35,13 +36,24 @@ func Client() {
 		// if len(cmdline) == 1 {
 		// 	continue
 		// }
-		go clientHandler(conn, cmdline, cmd, params)
+		if len(cmdline) > 0 {
+			go clientHandler(conn, cmdline, cmd, params)
+		}
 	}
 }
 
 func clientHandler(c net.Conn, cmdline, cmd string, params []string) {
 	sendCmd(c, cmdline)
 	switch cmd {
+	case "pull":
+		if len(params) < 2 {
+			fmt.Println("Haven't specified the file name that you wanna save")
+			return
+		}
+		e := ClientReceive(c, params[1])
+		if e != nil {
+			fmt.Println(e)
+		}
 	case "push":
 		if len(params) < 1 {
 			fmt.Println("Haven't specified the file name that you wanna upload")
@@ -49,15 +61,6 @@ func clientHandler(c net.Conn, cmdline, cmd string, params []string) {
 		}
 
 		e := ClientSend(c, params[0])
-		if e != nil {
-			fmt.Println(e)
-		}
-	case "pull":
-		if len(params) < 2 {
-			fmt.Println("Haven't specified the file name that you wanna save")
-			return
-		}
-		e := ClientReceive(c, params[1])
 		if e != nil {
 			fmt.Println(e)
 		}
@@ -73,6 +76,7 @@ func sendCmd(c net.Conn, cmdline string) {
 	if e != nil {
 		fmt.Println(e)
 	}
+	fmt.Println("shit")
 }
 
 func receiveMsg(c net.Conn) {

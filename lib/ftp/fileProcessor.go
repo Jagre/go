@@ -12,12 +12,13 @@ func Read(filename string) ([]byte, error) {
 		return nil, e
 	}
 	defer f.Close()
-	contents := []byte{}
-	_, e = f.Read(contents)
+
+	contents := make([]byte, 512)
+	n, e := f.Read(contents)
 	if e != nil {
 		return nil, e
 	}
-	return contents, nil
+	return contents[:n], nil
 }
 
 //Write content to the file name that was specified by youself

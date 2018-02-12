@@ -14,7 +14,8 @@ func parseCmd(rd *bufio.Reader) (string, string, []string, error) {
 	if e != nil {
 		return "", "", nil, e
 	}
-	if len(cmdline) == 0 {
+	cmdline = strings.TrimSpace(cmdline)
+	if "\n" == cmdline || len(cmdline) == 0 {
 		return "", "", nil, errors.New("No command contents")
 	}
 
@@ -34,7 +35,7 @@ func send(c net.Conn, filename string) error {
 		return e
 	}
 	//write the contents to the distination machine
-	_, e = c.Write(contents)
+	_, e = c.Write(contents[:])
 	if e != nil {
 		return e
 	}
@@ -45,13 +46,14 @@ func send(c net.Conn, filename string) error {
 func receive(c net.Conn, filename string) error {
 	contents := make([]byte, 512)
 	//read content from distination machine
-	_, e := c.Read(contents)
+	//rd := bufio.NewReader(c)
+	//n, e := rd.Read(contents)
+	n, e := c.Read(contents)
 	if e != nil {
 		return e
 	}
-
 	//save contents on local by filename
-	e = Write(contents, filename)
+	e = Write(contents[:n], filename)
 	if e != nil {
 		return e
 	}

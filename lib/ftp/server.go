@@ -3,6 +3,7 @@ package ftp
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"net"
 	"os"
 )
@@ -29,14 +30,19 @@ func Server() {
 
 func serverHandler(c net.Conn) {
 	defer c.Close()
+	c.Write([]byte(fmt.Sprintf("Welcome to connect to FTP server | %v", c.LocalAddr().String())))
+	rd := bufio.NewReader(c)
 	for {
-		c.Write([]byte(fmt.Sprintf("Welcome to connect to FTP server | %v", c.LocalAddr().String())))
-		rd := bufio.NewReader(c)
 		_, cmd, params, e := parseCmd(rd)
+		fmt.Println(cmd)
 		if e != nil {
-			fmt.Println(e)
-			continue
+			if e != io.EOF {
+				fmt.Printf("%v\nClinet: %v | DISCONNECTING\n", e, c.RemoteAddr().String())
+			}
+			return
 		}
+
+		fmt.Println(cmd)
 		switch cmd {
 		case "pull":
 			if len(params) == 0 {
@@ -70,29 +76,3 @@ func serverHandler(c net.Conn) {
 
 	}
 }
-
-//returns: commandname, params, e
-// func parseCmdServer(c net.Conn) (string, []string, error) {
-// 	// buf := []byte{}
-// 	// _, e = c.Read(buf)
-// 	// if e != nil {
-// 	// 	return cmd, params, e
-// 	// }
-
-// 	reader := bufio.NewReader(c)
-// 	cmdline, e := reader.ReadString('\n')
-// 	if e != nil {
-// 		return "", nil, e
-// 	}
-// 	if len(cmdline) == 0 {
-// 		return "", nil, errors.New("No command contents")
-// 	}
-
-// 	cmd := strings.Fields(cmdline)[0]
-// 	cmd = strings.ToLower(cmd)
-// 	params := []string{}
-// 	for i := 1; i < len(strings.Fields(cmdline)); i++ {
-// 		params = append(params, strings.Fields(cmdline)[i])
-// 	}
-// 	return cmd, params, nil
-// }
