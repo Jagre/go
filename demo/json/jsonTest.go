@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"jagre/myJson"
+	"github.com/aaa/go/lib/myJson"
 )
 
 func main() {
