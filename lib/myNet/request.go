@@ -1,4 +1,4 @@
-//https://github.com/mikemintang/go-curl/blob/master/request.go
+//ref: https://github.com/mikemintang/go-curl/blob/master/request.go
 
 package myNet
 
@@ -127,7 +127,7 @@ func (req *MyRequest) SetQueries(queries map[string]string) *MyRequest {
 	return req
 }
 
-//SetPostData method
+//SetPostData method it's param is object
 func (req *MyRequest) SetPostData(postData interface{}) *MyRequest {
 	if postData != nil {
 		data, e := json.Marshal(postData)

@@ -34,8 +34,8 @@ type paymentCollectionInfo struct {
 }
 
 //GetCollectionIDs will parse collectionIds from json result of the payment page
-func GetCollectionIDs(site string, orderid int64) []int64 {
-	url := site + "Controller/Action"
+func GetCollectionIDs(url string, orderid int64) []int64 {
+	url = url + "Payment/GetPaymentInfo" //"Controller/Action"
 	req := myNet.NewMyRequest()
 
 	param := orderQueryRequest{
