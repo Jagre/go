@@ -1,4 +1,4 @@
-package mssql
+package sql
 
 //【注】在使用些方法前，请在调用方法的主类文件中引用包："github.com/mattn/go-adodb"
 import (

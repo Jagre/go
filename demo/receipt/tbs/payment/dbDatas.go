@@ -3,7 +3,7 @@ package payment
 import (
 	"errors"
 	"fmt"
-	"github.com/aaa/go/lib/mssql"
+	"github.com/aaa/go/lib/sql"
 	"time"
 )
 
@@ -13,7 +13,7 @@ type ReceiptInfo struct {
 	HasReceiptCotent bool
 }
 
-func GetReceipts(conn *mssql.MSSQLConnection) *[]ReceiptInfo {
+func GetReceipts(conn *sql.MSSQLConnection) *[]ReceiptInfo {
 	receipts := []ReceiptInfo{}
 	db, e := conn.Open()
 	if e != nil {
@@ -58,7 +58,7 @@ func GetReceipts(conn *mssql.MSSQLConnection) *[]ReceiptInfo {
 	return &receipts
 }
 
-func GetOrder(conn *mssql.MSSQLConnection, orderid int64) bool {
+func GetOrder(conn *sql.MSSQLConnection, orderid int64) bool {
 	db, e := conn.Open()
 	if e != nil {
 		Log(e)
@@ -85,7 +85,7 @@ func GetOrder(conn *mssql.MSSQLConnection, orderid int64) bool {
 	return true
 }
 
-func GetReceiptsByOrderId(conn *mssql.MSSQLConnection, orderid int64) []string {
+func GetReceiptsByOrderId(conn *sql.MSSQLConnection, orderid int64) []string {
 	receiptNos := make([]string, 0)
 	db, e := conn.Open()
 	if e != nil {
@@ -109,7 +109,7 @@ func GetReceiptsByOrderId(conn *mssql.MSSQLConnection, orderid int64) []string {
 	return receiptNos
 }
 
-func GetOrderStatus(conn *mssql.MSSQLConnection, orderid int64) (PaymentStatus, OrderStatus, SalesChannel byte) {
+func GetOrderStatus(conn *sql.MSSQLConnection, orderid int64) (PaymentStatus, OrderStatus, SalesChannel byte) {
 	db, err := conn.Open()
 	if err != nil {
 		Log(err)
