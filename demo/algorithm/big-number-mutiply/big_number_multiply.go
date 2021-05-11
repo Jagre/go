@@ -12,7 +12,7 @@ import (
 注：result数组的长度根据公式N!的位数=[log(1)+log(2)+…..log(N)]+1([]表示向上取整)
 */
 
-func main2() {
+func main() {
 	var res [10]int
 	res[0] = 1
 	carry := 0 //进位

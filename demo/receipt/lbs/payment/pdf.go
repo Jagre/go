@@ -2,8 +2,9 @@ package payment
 
 import (
 	"fmt"
-	"github.com/aaa/go/lib/myNet"
 	"strings"
+
+	"github.com/aaa/go/lib/myNet"
 )
 
 // CreatePdf will create pdf file
